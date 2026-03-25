@@ -1,0 +1,88 @@
+﻿<Window x:Class="WpfAppT.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Auto Service Manager"
+        Height="760" Width="1280"
+        MinHeight="600" MinWidth="900"
+        WindowStartupLocation="CenterScreen"
+        Background="#F0F2F5">
+
+    <Window.Resources>
+        <Style x:Key="RibbonBtn" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#E8EAF0"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="Padding" Value="20 0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}"
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#FF6F0033"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#FF6F0055"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="RibbonBtnActive" TargetType="Button" BasedOn="{StaticResource RibbonBtn}">
+            <Setter Property="Background" Value="#FF6F00"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Ribbon -->
+        <Border Grid.Row="0" Background="#1565C0">
+            <DockPanel>
+                <TextBlock Text="Auto Service"
+                           FontSize="15" FontWeight="Bold"
+                           Foreground="White" FontFamily="Segoe UI"
+                           VerticalAlignment="Center"
+                           Margin="16 0 24 0"
+                           DockPanel.Dock="Left"/>
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                    <Button x:Name="BtnDashboard" Content="Dashboard"
+                            Style="{StaticResource RibbonBtnActive}"
+                            Click="BtnDashboard_Click"/>
+                    <Button x:Name="BtnRecords" Content="Records"
+                            Style="{StaticResource RibbonBtn}"
+                            Click="BtnRecords_Click"/>
+                    <Button x:Name="BtnSpecialists" Content="Specialists"
+                            Style="{StaticResource RibbonBtn}"
+                            Click="BtnSpecialists_Click"/>
+                    <Button x:Name="BtnCustomers" Content="Customers"
+                            Style="{StaticResource RibbonBtn}"
+                            Click="BtnCustomers_Click"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Контент -->
+        <Frame x:Name="MainFrame" Grid.Row="1"
+               NavigationUIVisibility="Hidden"
+               Background="#F7F8FA"/>
+    </Grid>
+</Window>
