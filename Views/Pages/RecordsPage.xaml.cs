@@ -23,6 +23,7 @@ namespace WpfAppT.Views.Pages
     {
         private readonly AppDbContext _db;
         private Record _selected;
+        private bool _showAll = false; 
 
         public RecordsPage(AppDbContext db)
         {
@@ -31,16 +32,29 @@ namespace WpfAppT.Views.Pages
             LoadData();
         }
 
+        private void ChkShowAll_Click(object sender, RoutedEventArgs e)
+        {
+            _showAll = ChkShowAll.IsChecked == true;
+            LoadData();
+        }
+
         private void LoadData()
         {
-            RecordsGrid.ItemsSource = _db.Records
+            _db.ChangeTracker.Clear();
+
+            var query = _db.Records
                 .Include(r => r.Specialist)
                 .Include(r => r.Customer)
                 .Include(r => r.Car).ThenInclude(c => c.Brand)
                 .Include(r => r.Photo)
-                .Where(r => !r.IsCompleted)
+                .AsQueryable();
+
+            if (!_showAll)
+                query = query.Where(r => !r.IsCompleted);
+
+            RecordsGrid.ItemsSource = query
                 .OrderBy(r => r.DateAdded)
-                .ToList();
+                .ToList(); // ← завжди має бути
 
             var lastMonth = DateTime.Now.AddMonths(-1);
             var top5 = _db.Records
@@ -262,7 +276,7 @@ namespace WpfAppT.Views.Pages
             _selected.IsCompleted = true;
             _selected.DateCompleted = DateTime.Now;
             _db.SaveChanges();
-            LoadData();
+            LoadData(); // тепер збереже _showAll і покаже правильно
         }
 
         private void BtnDelete_Click(object sender, RoutedEventArgs e)
