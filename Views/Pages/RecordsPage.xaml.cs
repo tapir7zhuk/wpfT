@@ -1,14 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using WpfAppT.Data;
 using WpfAppT.Models;
-using System.Net.Http;
-using System.Threading.Tasks;
+using WpfAppT.Services;
 
 namespace WpfAppT.Views.Pages
 {
@@ -350,5 +351,33 @@ namespace WpfAppT.Views.Pages
 
         private void BtnCancel_Click(object sender, RoutedEventArgs e)
             => ShowDetail();
+
+        private void BtnExportExcel_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new Microsoft.Win32.SaveFileDialog
+            {
+                Title = "Зберегти Excel",
+                Filter = "Excel файл|*.xlsx",
+                FileName = $"Records_{DateTime.Now:yyyyMMdd_HHmm}"
+            };
+            if (dlg.ShowDialog() != true) return;
+
+            var allRecords = _db.Records
+                .Include(r => r.Specialist)
+                .Include(r => r.Customer)
+                .Include(r => r.Car).ThenInclude(c => c.Brand)
+                .OrderBy(r => r.DateAdded)
+                .ToList();
+
+            var activeRecords = allRecords.Where(r => !r.IsCompleted).ToList();
+
+            var service = new ExcelExportService();
+            service.ExportRecords(allRecords, activeRecords, dlg.FileName);
+
+            // Відкриває файл після збереження
+            System.Diagnostics.Process.Start(
+                new System.Diagnostics.ProcessStartInfo(dlg.FileName)
+                { UseShellExecute = true });
+        }
     }
 }
